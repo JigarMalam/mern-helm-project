@@ -46,8 +46,17 @@ pipeline {
 
         stage('Deploy with Helm') {
             steps {
-                script {
-                    sh "helm upgrade --install ${HELM_RELEASE} ${HELM_CHART}"
+                withCredentials([file(credentialsId: 'kubeconfig-jenkins', variable: 'KUBECONFIG_FILE')]) {
+                    script {
+                        env.KUBECONFIG = "${KUBECONFIG_FILE}"
+
+                        sh '''
+                            echo "Using KUBECONFIG at $KUBECONFIG"
+                            kubectl config current-context
+                            kubectl get nodes
+                            helm upgrade --install ${HELM_RELEASE} ${HELM_CHART}
+                        '''
+                    }
                 }
             }
         }
