@@ -21,6 +21,16 @@ spec:
           ports:
             - containerPort: {{ .Values.backend.containerPort }}
           env:
+            - name: HASH_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: HASH_KEY
+            - name: JWT_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: JWT_SECRET_KEY
 {{- range .Values.backend.env }}
             - name: {{ .name }}
               value: "{{ .value }}"
